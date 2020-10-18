@@ -1,0 +1,6 @@
+[0608/161228.918:ERROR:cache_util_win.cc(21)] Unable to move the cache: The system cannot find the file specified. (0x2)
+[0608/161228.918:ERROR:cache_util.cc(141)] Unable to move cache folder GPUCache to old_GPUCache_000
+[0608/161228.918:ERROR:disk_cache.cc(178)] Unable to create cache
+[0608/161228.918:ERROR:shader_disk_cache.cc(623)] Shader Cache Creation failed: -2
+[0608/161229.184:WARNING:gpu_process_host.cc(1205)] The GPU process has crashed 1 time(s)
+[0608/161229.384:WARNING:gpu_process_host.cc(1205)] The GPU process has crashed 2 time(s)

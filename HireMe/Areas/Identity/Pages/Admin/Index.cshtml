@@ -1,0 +1,26 @@
+﻿@page
+@model DashboardModel
+@{
+    ViewData["Title"] = "Admin Panel";
+    Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+}
+<div class="wrapper">
+    <partial name="Partials/_ManageSideBar" />
+
+    <div class="main-panel">
+        <partial name="Partials/_ManageNav2" />
+
+
+        <!-- Content -->
+      
+        <!-- /.content -->
+        <div class="clearfix"></div>
+        <partial name="Partials/_ManageFooter" />
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

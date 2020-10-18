@@ -1,0 +1,51 @@
+﻿@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+
+    <link href="~/Home/css/drop_down_list.css" rel="stylesheet">
+    <link href="~/Home/select2/select2.min.css" rel="stylesheet" />
+    <link href="~/Home/select2/select2-bootstrap.min.css" rel="stylesheet" />
+
+}
+
+<div id="root">
+    <div class="app heading-sticky" style="background-color: rgb(255, 255, 255);">
+
+        <!-- Menu Area -->
+        <div class="header header-bg round-bottom-edges fixed-top" style="background: -webkit-gradient(linear, left top, right top, from(#207dff), to(#a16ae8));"></div>
+        <div class="header round-bottom-edges fixed-top" style="background-color: transparent;">
+            <partial name="../Home/customPartials/_MenuPartial" />
+        </div>
+
+        <!-- Content Area -->
+        <div class="page-content scroll-holder container-fluid pull-content">
+            @RenderBody()
+        </div>
+
+        <!-- Footer Area -->
+        <partial name="../Home/customPartials/_FooterPartial" />
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Home/select2/select2.min.js"></script>
+
+    <script src="~/Home/js/app.js"></script>
+    <script src="~/Home/js/drop_down_list.js"></script>
+
+    <script src="~/Home/jobs/listing/js/langSelect.js"></script>
+    <script src="~/Home/jobs/listing/js/tagsSelect.js"></script>
+    <script src="~/Home/jobs/listing/js/worktypeSelect.js"></script>
+
+    <script src="~/Home/tinymce/jquery.tinymce.min.js"></script>
+    <script src="~/Home/tinymce/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+
+            selector: '#mytextarea',
+            plugins: 'autoresize',
+            autoresize_on_init: false,
+            max_height: 500,
+            min_height: 400
+        });
+    </script>
+}

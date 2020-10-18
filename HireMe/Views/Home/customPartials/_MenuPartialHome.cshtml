@@ -1,0 +1,260 @@
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<style>
+
+    .dropdown-menu > li.open > a {
+        background-color: #F5F5F5;
+        color: #262626;
+        text-decoration: none;
+    }
+    hr {
+        background-color: #0094ff;
+    }
+</style>
+
+
+<div class="header round-bottom-edges fixed-top" id="hire-navbar" style="background-color: transparent;">
+    <div class="container">
+        <nav class="nav-main px-sm-0 navbar navbar-expand navbar-light round-bottom-edges">
+            <a target="_self" class="navbar-brand" href="/">
+                <img src="~/customCSS/Base/images/logo.png" />
+            </a>
+
+            @* @if (SignInManager.IsSignedIn(User))
+            {
+            <div class="desktop-only">
+                <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
+                    <i class="fas fa-bars"></i>
+                </a>
+            </div>
+             }*@
+
+
+            <div class="flex-align-center ml-auto">
+                <div class="desktop-only">
+                    <a target="_self" asp-controller="Home" asp-action="Index" class="text-nav-link">Начало</a>
+                    <a target="_self" asp-controller="Jobs" asp-action="Index" class="text-nav-link">Oвяви за работа</a>
+                    <a target="_self" asp-controller="Contestants" asp-action="Index" class="text-nav-link">Кандидати</a>
+
+                    @if (!SignInManager.IsSignedIn(User))
+                    {
+
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-success">Влез</a>
+
+                        <div class="btn-group dropleft">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Регистрирай се
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Като Кандидат</a>
+                                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/RegisterAsEmployer">Като Работодател</a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="btn-group dropleft">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Меню
+                            </button>
+                            <div class="dropdown-menu">
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Admin/Index">Контролен Панел</a>
+                                }
+                                @if (User.IsInRole("Moderator"))
+                                {
+                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Admin/Index">Контролен Панел</a>
+                                }
+                                @if (User.IsInRole("User"))
+                                {
+                                    <a class="dropdown-item" asp-controller="Contestants" asp-action="Create">Публикувай Кандидатура</a>
+                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Resume/All">Качи CV/Резюме</a>
+                                }
+                                @if (User.IsInRole("Contestant"))
+                                {
+                                    <a class="dropdown-item" asp-controller="Contestants" asp-action="Create">Публикувай Кандидатура</a>
+                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Resume/All">Качи CV/Резюме</a>
+                                }
+                                @if (User.IsInRole("Employer"))
+                                {
+                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Companies/Create">Добави Компания</a>
+                                    <a class="dropdown-item" asp-controller="Jobs" asp-action="Create">Добави Обява</a>
+                                }
+
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Дашборд</a>
+
+                                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                                    <button type="submit" class="dropdown-item">Излез</button>
+                                </form>
+
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="mobile-only-flex hamburger-holder">
+                    <button id="btn-menuMobile" label="Toggle navigation" type="button" class="mobile-only navbar-toggler collapsed">
+                        <span class="navbar-toggler-icon"></span>
+                    </button><span class="hamburger-text">Меню</span>
+                </div>
+
+            </div>
+            <div id="navbar-Mobile" style="display: none;">
+                <div class="offcanvas-collapse mobile-only navbar-collapse show" style="background-color: #0a2350;">
+                    <div class="top-side">
+                        <a target="_self" class="navbar-brand" href="/">
+                            <img src="~/customCSS/Base/images/logo.png" />
+                        </a>
+                        <div class="close-btn" id="close-btn">
+                            <span class="icon ">
+                                <svg width="19" height="19"
+                                     viewBox="0 0 19 19" fill="none">
+                                    <path d="M18.158 16.7433C18.2716 16.8569 18.3189 17.0369 18.1864 17.1694L17.3909 17.9649C17.2914 18.0644 17.0784 18.0502 16.9647 17.9365L0.448715 1.42053C0.297192 1.269 0.320867 1.09381 0.420304 0.994369L1.2158 0.198874C1.34838 0.0662913 1.49043 0.0757614 1.64196 0.227284L18.158 16.7433Z"
+                                          fill="#94E4D6"></path>
+                                    <path d="M16.7433 0.227287C16.8569 0.113645 17.0369 0.0662932 17.1694 0.198876L17.9649 0.994371C18.0644 1.09381 18.0502 1.30689 17.9365 1.42053L1.42053 17.9365C1.269 18.088 1.09381 18.0644 0.994369 17.9649L0.198874 17.1694C0.0662913 17.0369 0.0757614 16.8948 0.227284 16.7433L16.7433 0.227287Z"
+                                          fill="#94E4D6"></path>
+                                </svg>
+                            </span>
+
+
+                        </div>
+                    </div>
+                    <div class="bottom-side navbar-nav">
+                        <ul>
+                            <li>
+                                <a target="_self" asp-controller="Home" asp-action="Index" class="nav-link">Начало</a>
+                            </li>
+
+                            <li>
+                                <a target="_self" asp-controller="Jobs" asp-action="Index" class="nav-link">Oвяви за работа</a>
+                            </li>
+
+                            <li>
+                                <a target="_self" asp-controller="Contestants" asp-action="Index" class="nav-link">Кандидати</a>
+                            </li>
+
+                            @if (SignInManager.IsSignedIn(User))
+                            {
+                                <li>
+                                    <a target="_self" asp-area="Identity" asp-page="/Account/Manage/Index" class="nav-link">Дашборд</a>
+                                </li>
+                            }
+
+                            @if (!SignInManager.IsSignedIn(User))
+                            {
+
+                                <hr>
+                                <li>
+                                    <a target="_self" asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-success">Вход</a>
+
+                                    <div class="btn-group dropping">
+                                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Регистрирай се
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Като Кандидат</a>
+                                            <a class="dropdown-item" asp-area="Identity" asp-page="/Account/RegisterAsEmployer">Като Работодател</a>
+                                        </div>
+                                    </div>
+
+                                </li>
+
+
+                            }
+                            else
+                            {
+
+                                <hr>
+                                <li>
+                                    <form id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                                        <div class="btn-group dropping">
+                                            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Бърз достъп
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                @if (User.IsInRole("Admin"))
+                                                {
+
+                                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Admin/Index">Контролен Панел</a>
+
+                                                }
+                                                @if (User.IsInRole("Moderator"))
+                                                {
+
+                                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Admin/Index">Контролен Панел</a>
+
+                                                }
+                                                @if (User.IsInRole("User"))
+                                                {
+                                                    <a class="dropdown-item" asp-controller="Contestants" asp-action="Create">Публикувай Кандидатура</a>
+                                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Resume/All">Качи CV/Резюме</a>
+
+                                                }
+                                                @if (User.IsInRole("Contestant"))
+                                                {
+                                                    <a class="dropdown-item" asp-controller="Contestants" asp-action="Create">Публикувай Кандидатура</a>
+                                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Resume/All">Качи CV/Резюме</a>
+
+                                                }
+                                                @if (User.IsInRole("Employer"))
+                                                {
+                                                    <a class="dropdown-item" asp-area="Identity" asp-page="/Companies/Create">Добави Компания</a>
+                                                    <a class="dropdown-item" asp-controller="Jobs" asp-action="Create">Добави Обява</a>
+
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <a target="_self" href="javascript:{}" onclick="document.getElementById('logoutForm').submit();" class="btn btn-outline-danger">Изход</a>
+                                    </form>
+                                </li>
+
+                            }
+                        </ul>
+
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+    </div>
+</div>
+
+<script src="~/Home/js/jquery-3.4.1.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            if ($(window).scrollTop() > 100.0) {
+                $("#hire-navbar").css({ "background": "-webkit-gradient(linear, left top, right top, from(#207dff), to(#a16ae8))" });
+            }
+            else {
+                $("#hire-navbar").css({ "background": "transparent" });
+            }
+
+        })
+    })
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btn-menuMobile").click(function () {
+            $("#navbar-Mobile").toggle();
+        });
+
+        $("#close-btn").click(function () {
+            $("#navbar-Mobile").hide();
+        });
+    });
+</script>
+
+
+
+
+

@@ -1,0 +1,332 @@
+﻿@page "{id:int}"
+
+@inject UserManager<User> UserManager
+@inject ISkillsService _skillService
+@inject ILanguageService _langService
+
+@model EditModel
+@{
+    ViewData["Title"] = "Редактиране";
+    Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+
+    var categories = ViewBag.Categories as IEnumerable<SelectListItem>;
+    var locations = ViewBag.Locations as IEnumerable<SelectListItem>;
+
+    var visiblityList = Enum.GetValues(typeof(Visiblity));
+    var workTypeList = ViewBag.work as IEnumerable<SelectListItem>;
+    var poster = UserManager.GetUserId(User);
+
+    var skills = _skillService.GetAllByContestant(Model.Input.Id);
+    var languages = _langService.GetAllByContestant(Model.Input.Id);
+}
+<style>
+    .pdfobject-container {
+        height: 120rem;
+        border: 1rem solid rgba(0,0,0,.1);
+    }
+
+    .text-success {
+        color: #56d48f;
+    }
+</style>
+
+<link href="~/Home/css/drop_down_list.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+<link href="~/Home/select2/select2-bootstrap.min.css" rel="stylesheet" />
+
+
+<div class="row form-group">
+    <!-- Modal -->
+    <div id="myResume" class="modal fade" role="dialog" data-backdrop="false">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body">
+                    <div id="resume">
+                    </div>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="wrapper">
+    <partial name="../Dashboard/_ManageSideBar" />
+
+    <div class="main-panel">
+        <partial name="../Dashboard/_ManageNav2" />
+
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <form id="edit-contestant" method="post" enctype="multipart/form-data">
+
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="header">
+                                   
+                                    <h4 class="title">Редактиране</h4>
+                                </div>
+
+                                <div class="content">
+
+                                    <div class="row form-group">
+                                        <!-- Modal -->
+                                        <div id="myModal" class="modal fade" role="dialog" data-backdrop="false">
+                                            <div class="modal-dialog modal-lg">
+
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                        <i class="fa fa-info-circle" aria-hidden="true"></i> <strong>Минималният брой символи е 100.</strong><br>
+                                                        <i class="fa fa-info-circle" aria-hidden="true"></i> <small>Препоръчваме ви да използвате между 200-300 думи.</small><br>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <textarea asp-for="Input.Description" rows="5" cols="40" id="mytextarea"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <input type="submit" value="Save" class="btn btn-success" data-dismiss="modal" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label asp-for="Input.Name"></label>
+                                                <input asp-for="Input.Name" class="form-control" enabled />
+                                                <span asp-validation-for="Input.Name" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="Input.Genders"></label>
+                                                <drop-down-list asp-for="Input.Genders" asp-items="Html.GetEnumSelectList<Gender>()" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <label asp-for="Input.About"></label>
+                                                <input asp-for="Input.About" class="form-control" enabled />
+                                                <span asp-validation-for="Input.About" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="Input.Experience"></label>
+                                                <input asp-for="Input.Experience" class="form-control" enabled />
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="Input.WorkType"></label>
+                                                <select class="selectWork form-control input-lg" id="id_label_multiple3" multiple="multiple" style="width: 75%"></select>
+                                                <input asp-for="Input.WorkType" type="hidden" id="selectWork_Value" />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label asp-for="Input.CategoryId"></label><br>
+                                                <drop-down-list asp-for="Input.CategoryId" asp-items="categories" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="Input.Age"></label>
+                                                <input asp-for="Input.Age" class="form-control" enabled />
+                                                <span asp-validation-for="Input.Age" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="Input.payRate"></label>
+                                                <input asp-for="Input.payRate" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="Input.SalaryType"></label>
+                                                <drop-down-list asp-for="Input.SalaryType" asp-items="Html.GetEnumSelectList<SalaryType>()" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label asp-for="Input.LocationId"></label>
+                                                <select asp-for="Input.LocationId" asp-items="locations" class="form-control"></select>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label asp-for="Input.profileVisiblity"></label>
+                                                <select asp-for="Input.profileVisiblity" asp-items="Html.GetEnumSelectList<Visiblity>()" class="form-control"></select>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label asp-for="Input.userSkillsId"></label>
+                                                <select class="selectSkills form-control" id="id_label_multiple" multiple="multiple" style="width: 95%">
+                                                    @if (skills != null && Model.Input.userSkillsId != null)
+                                                    {
+                                                        @await foreach (var item in skills)
+                                                        {
+                                                            <option value="@item.Id" selected="selected">@item.Title</option>
+                                                        }
+                                                    }
+                                                </select>
+                                                <input asp-for="Input.userSkillsId" type="hidden" id="selectSkills_Value" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label asp-for="Input.LanguagesId"></label>
+                                                <select class="selectLang form-control" id="id_label_multiple2" multiple="multiple" style="width: 95%">
+                                                    @if (languages != null && Model.Input.LanguagesId != null)
+                                                    {
+                                                        @await foreach (var item in languages)
+                                                        {
+                                                            <option value="@item.Id" selected="selected">@item.Name</option>
+                                                        }
+                                                    }
+                                                </select>
+                                                <input asp-for="Input.LanguagesId" type="hidden" id="selectLang_Value" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <button type="button" class="btn btn-info btn-fill pull-center" data-toggle="modal" data-target="#myModal">Описание</button>
+                                    <button type="submit" class="btn btn-success btn-fill pull-right">Актулизирай</button>
+                                    <div class="clearfix"></div>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card card-user">
+                                <div class="content">
+                                    <label asp-for="Input.PictureUrl"></label>
+                                    <img src="@Model.Input.PictureUrl" class="img img-responsive img-thumbnail" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card card-user">
+                                <div class="content">
+                                    <div class="form-group">
+                                        <label asp-for="Input.FormFile"></label>
+                                        <br>
+                                        <button type="button" class="btn btn-simple btn-fill pull-center" data-toggle="modal" data-target="#myResume">Виж резюме</button>
+                                        <hr><br>
+                                        <strong>или качи ново</strong>
+                                        <hr><br>
+                                        <input asp-for="Input.FormFile" type="file" />
+                                        <hr>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Input.WebsiteUrl"></label>
+                                        <input asp-for="Input.WebsiteUrl" class="form-control" enabled />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="Input.PortfolioUrl"></label>
+                                        <input asp-for="Input.PortfolioUrl" class="form-control" enabled />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="Input.Facebook"></label>
+                                        <input asp-for="Input.Facebook" class="form-control" enabled />
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Input.Linkedin"></label>
+                                        <input asp-for="Input.Linkedin" class="form-control" enabled />
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Input.Github"></label>
+                                        <input asp-for="Input.Github" class="form-control" enabled />
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Input.Dribbble"></label>
+                                        <input asp-for="Input.Dribbble" class="form-control" enabled />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <partial name="../Dashboard/_ManageFooter" />
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/Home/js/app.js"></script>
+    <script src="~/Home/js/drop_down_list.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+    <script>
+        tinymce.init({
+            selector: '#mytextarea',
+            icons: 'material',
+            height: 550,
+            width: 850
+        });
+    </script>
+
+    <script src="~/Home/contestants/listing/js/langSelect.js"></script>
+    <script src="~/Home/contestants/listing/js/tagsSelect.js"></script>
+    <script src="~/Home/contestants/listing/js/worktypeSelect.js"></script>
+
+    <script src="~/Home/details/pdfViewer/js/pdfobject.min.js"></script>
+    <script>PDFObject.embed("@Model.Input.resumeFullPath", "#resume");</script>
+}
+

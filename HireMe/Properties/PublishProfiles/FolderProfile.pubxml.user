@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>C:\Users\iNexus\Desktop\publish</_PublishTargetUrl>
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAmGk63oxS0EaiBrlwpG6twAAAAAACAAAAAAAQZgAAAAEAACAAAAAHsaH2yvcY0hdjbaqio1gGTMKcXbvjIJSvLeiKZ/yIKQAAAAAOgAAAAAIAACAAAAAKjj7x4WImEjSZf1y5z3CDlMv3UHgYib83Ac28JNCaoiAAAABIX5jfdtuM4dpOPVq37bi2YBirtqrmxotpAtQAyTqomUAAAAAaTOXCUmWXqwZeKrZhQ44IYV7tIj+Po2lz4bfT7tF0guAXC80X9au6KjDPquVytcuKSLzFaQvqOch1P/Hp2khB</EncryptedPassword>
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="DefaultConnection">
+      <Value>Server=.\MSSQLSERVER2019%3bDatabase=HireMe_Base%3bUser Id=HireMe_User%3bPassword=Badass6615%3bMultipleActiveResultSets=true</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+</Project>

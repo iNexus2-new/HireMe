@@ -1,0 +1,113 @@
+﻿@page
+
+@inject UserManager<User> UserManager
+@inject IFavoritesService FavoritesService
+@inject ICompanyService CompanyService
+@inject IConfiguration _config
+
+@model FavoriteListModel
+@{
+    ViewData["Title"] = "Любими";
+    Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+
+    var user = await UserManager.GetUserAsync(User);
+
+    string siteUrl = _config.GetSection("MySettings").GetValue<string>("CompanyImageUrl");
+
+    var favJobs = FavoritesService.GetFavouriteBy<JobsViewModel>(user, PostType.Job);
+    var favContestants = FavoritesService.GetFavouriteBy<ContestantViewModel>(user, PostType.Contestant);
+    var favCompanies = FavoritesService.GetFavouriteBy<CompanyViewModel>(user, PostType.Company);
+}
+<link href="~/Home/favourites/card.css" rel="stylesheet" />
+
+
+<partial name="../Dashboard/_ManageSideBar" />
+
+<div class="main-panel">
+    <partial name="../Dashboard/_ManageNav2" />
+
+    <div class="content">
+        <div class="container-fluid" id="favoriteCards">
+            <div class="row">
+                @if (await favJobs.CountAsync().ConfigureAwait(false) > 0)
+                {
+                    <div class="col-sm-3">
+                        <div class="header">
+                            <h4 class="title">Обяви за работа</h4>
+                            <hr>
+                        </div>
+                        @await foreach (var item in favJobs)
+                        {
+                            var company = await CompanyService.GetByIdAsync<CompanyViewModel>(item.CompanyId);
+                            string image = @siteUrl + @company.Logo;
+
+                            <card data-image="@image">
+
+                                <a slot="header" asp-controller="Jobs" asp-action="Details" asp-route-id="@item.Id" class="btn btn-dark btn-fill">Open</a>
+
+                                <div class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
+                                    <a asp-controller="Jobs" asp-action="RemoveFromFavourite" asp-route-id="@item.Id">
+                                        <span class="icon-heart"></span>
+                                    </a>
+                                </div>
+
+                            </card>
+
+
+                        }
+                    </div>
+                }
+
+                @if (await favCompanies.CountAsync().ConfigureAwait(false) > 0)
+                {
+                    <div class="col-sm-3">
+                        <div class="header">
+                            <h3 class="title">Любими кандидати</h3>
+                            <hr>
+                        </div>
+                        @await foreach (var item in favContestants)
+                        {
+                            var userId = await UserManager.FindByIdAsync(item.PosterID);
+                            string image = siteUrl + userId.PictureName;
+
+                            <card data-image="@image">
+                                <h4 slot="header">@item.Name</h4>
+
+                            </card>
+                        }
+                    </div>
+                }
+                @if (await favContestants.CountAsync().ConfigureAwait(false) > 0)
+                {
+                    <div class="col-sm-3">
+                        <div class="header">
+                            <h4 class="title">Фирми</h4>
+                            <hr>
+                        </div>
+                        @await foreach (var item in favCompanies)
+                        {
+                            string image = @siteUrl + item.Logo;
+
+                            <card data-image="@image">
+                                <h4 slot="header">@item.Title</h4>
+                            </card>
+                        }
+                    </div>
+                }
+
+            </div>
+
+            </div>
+            </div>
+
+    <partial name="../Dashboard/_ManageFooter" />
+
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/Home/vue.min.js"></script>
+    <script src="~/Home/favourites/card.js" type="text/javascript"></script>
+}
+

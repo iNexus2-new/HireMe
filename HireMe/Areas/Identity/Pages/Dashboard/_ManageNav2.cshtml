@@ -1,0 +1,235 @@
+﻿@inject IConfiguration config
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@inject IMessageService _messageService
+@inject INotificationService _notifyService
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+
+    var userId = UserManager.GetUserId(User);
+    var user = await UserManager.GetUserAsync(User);
+
+    var nofications = _notifyService.GetAllBy(user);
+    var messages = _messageService.GetAllMessagesBy_Receiver<MessageViewModel>(userId, 10);
+
+    var siteUrl = config.GetSection("MySettings").GetSection("SiteUrl").Value;
+    var count = await nofications.CountAsync().ConfigureAwait(false);
+    var context = Context.Request;
+    var location = new Uri($"{context.Scheme}://{context.Host}{context.Path}{context.QueryString}");
+    var returnUrl = location.AbsoluteUri;
+
+    string icon = null;
+}
+
+
+<nav class="navbar navbar-default navbar-fixed">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example-2">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+
+        <div class="collapse navbar-collapse">
+
+            <ul class="nav navbar-nav navbar-left">
+
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-inbox"></i>
+                            <b class="caret hidden-sm hidden-xs"></b>
+                            @if (count > 0)
+                            {
+                                <span class="notification hidden-sm hidden-xs">@count</span>
+                            }
+
+                            <p class="hidden-lg hidden-md">Съобщения</p>
+                        </a>
+
+                        <ul class="dropdown-menu">
+                            @if (messages != null && count > 0)
+                            {
+                                await foreach (var entity in messages)
+                                {
+
+                                    <li>
+                                        <a href="@siteUrl">
+                                            <span class="fa @icon"></span>@entity.Title <br>
+                                            <small class="pull-right">
+                                               
+                                            </small>
+                                        </a>
+                                    </li>
+                                }
+                                <hr>
+                                <li>
+                                    <a asp-controller="Notifications" asp-action="ClearNotifications" asp-route-returnurl="@returnUrl">
+                                        <span class="fa fa-times"></span> Изчисти всички
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li><a asp-page="/Messenger/index">Виж всички</a></li>
+                            }
+
+
+                        </ul>
+</li>
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-globe"></i>
+                        <b class="caret hidden-sm hidden-xs"></b>
+                        @if (count > 0)
+                        {
+                            <span class="notification hidden-sm hidden-xs">@count</span>
+                        }
+
+                        <p class="hidden-lg hidden-md">Известия</p>
+                    </a>
+
+                    <ul class="dropdown-menu">
+                        @if (nofications != null && count > 0)
+                        {
+                            await foreach (var entity in nofications)
+                            {
+                                switch (entity.Type)
+                                {
+                                    case NotifyType.Information:
+                                        icon = "fa-info-circle";
+                                        break;
+                                    case NotifyType.Warning:
+                                        icon = "fa-exclamation-triangle";
+                                        break;
+                                    case NotifyType.Danger:
+                                        icon = "fa-ban";
+                                        break;
+                                }
+
+                                <li>
+                                    <a href="@siteUrl@entity.Url">
+                                        <span class="fa @icon"></span>@entity.Title <br>
+                                        <small class="pull-right">
+                                            @entity.Date.ToString("dd/MM/yyyy")
+                                        </small>
+                                    </a>
+                                </li>
+                            }
+                            <hr>
+                            <li>
+                                <a asp-controller="Notifications" asp-action="ClearNotifications" asp-route-returnurl="@returnUrl">
+                                    <span class="fa fa-times"></span> Изчисти всички
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li><a href="#">Нямате нови известия</a></li>
+                        }
+
+
+                    </ul>
+                </li>
+                <li>
+                    <a asp-page="/Account/Manage/FavoriteList">
+                        <i class="fa fa-heart"></i>
+                        <b class="caret hidden-sm hidden-xs"></b>
+
+                       @* @if (this._messageService.GetMessagesUnreadBy_Receiver(userId).Result > 0)
+                        {
+                            <span class="notification hidden-sm hidden-xs">@this._messageService.GetMessagesUnreadBy_Receiver(userId)</span>
+                        }
+                           *@
+                        <p class="hidden-lg hidden-md">Любими</p>
+                    </a>
+                </li>
+            </ul>
+
+
+            <ul class="nav navbar-nav navbar-right">
+
+                @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                {
+                    <li>
+                        <a asp-page="/Admin/index">
+                            <i class="fa fa-universal-access"></i>
+                            @*
+                            @if (this._messageService.GetMessagesUnreadBy_Receiver(userId).Result > 0)
+                            {
+                                <span class="notification hidden-sm hidden-xs">@this._messageService.GetMessagesUnreadBy_Receiver(userId)</span>
+                            }
+                                *@
+                            <p class="hidden-lg hidden-md">Панел</p>
+                        </a>
+                    </li>
+                }
+
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-plus"></i>
+                            <p class="hidden-lg hidden-md">Добави</p>
+                        </a>
+
+                        <ul class="dropdown-menu">
+
+                            @if (User.IsInRole("Employer"))
+                            {
+                                <li>
+                                    <a asp-page="/Companies/Create">
+                                        <span class="fa fa-briefcase"></span>Добави фирма<br>
+                                    </a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Recruiter"))
+                            {
+                                <li>
+                                    <a asp-controller="Jobs" asp-action="Create">
+                                        <span class="fa fa-tasks "></span>Добави обява<br>
+                                    </a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Contestant") || User.IsInRole("User"))
+                            {
+                                <li>
+                                    <a asp-page="/Resume/All">
+                                        <span class="fa fa-print">Добави резюме</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-controller="Contestants" asp-action="Create">
+                                        <span class="fa fa-user-plus" style="font-weight:500;">Добави кандидатура</span>
+                                    </a>
+                                </li>
+                            }
+                            </ul>
+                    </li>
+                
+
+                
+                <li>
+                    <a asp-controller="Home" asp-action="Index">
+                        <i class="fa fa-home"></i>
+                        <p class="hidden-lg hidden-md">Начало</p>
+                    </a>
+                </li>
+
+
+                <li>
+                    <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <i class="fa fa-sign-out"></i>
+                        <p class="hidden-lg hidden-md">Излез</p>
+                    </a>
+                </li>
+
+                <li class="separator hidden-lg hidden-md"></li>
+            </ul>
+   
+        </div>
+    </div>
+</nav>

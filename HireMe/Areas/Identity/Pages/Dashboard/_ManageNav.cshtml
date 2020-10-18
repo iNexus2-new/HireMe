@@ -1,0 +1,88 @@
+﻿@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+
+    var poster = UserManager.GetUserId(User);
+}
+
+
+    <ul class="nav">
+        <li class="active">
+            <a asp-page="/Account/Manage/Index">
+                <i class="pe-7s-graph"></i>
+                <p>Дашборд</p>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Account/Manage/EditProfile">
+                <i class="pe-7s-user"></i>
+                <p>Лични данни</p>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Account/Manage/ChangePassword">
+                <i class="pe-7s-key"></i>
+                <p>Парола</p>
+            </a>
+        </li>
+        @if (User.IsInRole("User") || User.IsInRole("Contestant") || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+        {
+            <li>
+                <a asp-page="/Resume/All">
+                    <i class="pe-7s-file"></i>
+                    <p>Моите файлове</p>
+                </a>
+            </li>
+        }
+            @if (User.IsInRole("User") || User.IsInRole("Contestant") || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+            {
+
+                <li>
+                    <a asp-page="/Contestant/Posts">
+                        <i class="pe-7s-edit"></i>
+                        <p>Кандидатури</p>
+                    </a>
+                </li>
+            }
+            @if (User.IsInRole("Admin") || User.IsInRole("Moderator") || User.IsInRole("Employer") || User.IsInRole("Recruiter"))
+            {
+                <li>
+                    <a asp-page="/Companies/Posts">
+                        <i class="pe-7s-note2"></i>
+                        <p>Моите фирми</p>
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-page="/Jobs/Posts">
+                        <i class="pe-7s-display2"></i>
+                        <p>Обяви за работа</p>
+                    </a>
+                </li>
+            }
+            @if (hasExternalLogins)
+            {
+                <li>
+                    <a asp-page="/Account/Manage/ExternalLogins">
+                        <i class="pe-7s-global"></i>
+                        <p>Външни приложения</p>
+                    </a>
+                </li>
+            }
+            <li>
+                <a asp-page="/Account/Manage/PersonalData">
+                    <i class="pe-7s-diskette"></i>
+                    <p>Лични данни</p>
+                </a>
+            </li>
+
+            <li class="active-pro">
+                <a asp-page="/Account/Manage/UpgradeToPro">
+                    <i class="pe-7s-rocket"></i>
+                    <p>Premium member</p>
+                </a>
+            </li>
+        </ul>

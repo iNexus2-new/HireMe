@@ -1,0 +1,165 @@
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@inject IFavoritesService FavoritesService
+@inject IMessageService _messageService
+@inject INotificationService _notifyService
+@inject IConfiguration _config
+
+<link href="~/Home/jobs/listing/listing.css" rel="stylesheet" />
+
+<div class="page-wrapper chiller-theme collapsed">
+    <partial name="_MenuPartial.cshtml" />
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+
+        var user = await UserManager.GetUserAsync(User);
+        string siteImageUrl = _config.GetSection("MySettings").GetSection("SiteImageUrl").Value;
+        string picture = siteImageUrl + user.PictureName;
+
+        var nofications = _notifyService.GetAllBy(user);
+        var notifyCount = await nofications.CountAsync().ConfigureAwait(false);
+
+        var favJobs = FavoritesService.GetFavouriteBy<JobsViewModel>(user, PostType.Job);
+        var favContestants = FavoritesService.GetFavouriteBy<ContestantViewModel>(user, PostType.Contestant);
+        var favCompanies = FavoritesService.GetFavouriteBy<CompanyViewModel>(user, PostType.Company);
+
+        <nav id="sidebar" class="sidebar-wrapper">
+            <div class="sidebar-content">
+                <div class="sidebar-brand">
+                    <a asp-controller="Home" asp-action="Index">навигация</a>
+                    <div id="close-sidebar">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+                <div class="sidebar-header">
+                    <div class="user-pic">
+                        <img class="img-responsive img-rounded" src="@picture" alt="User picture" />
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name">
+                            @user.FirstName
+                            <strong>@user.LastName</strong>
+                        </span>
+                        <span class="user-role">ADMIN</span>
+                        <span class="user-status">
+                            <i class="fa fa-circle"></i>
+                            <span>На линия</span>
+                        </span>
+                    </div>
+                </div>
+                <!-- sidebar-header  -->
+                <div class="sidebar-search">
+                    <div>
+                        <div class="input-group">
+                            <input type="text" class="form-control search-menu" placeholder="Търси...">
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- sidebar-search  -->
+                <div class="sidebar-menu">
+                    <ul>
+                        <li class="header-menu">
+                            <span>Общ</span>
+                        </li>
+                        <li>
+                            <a asp-area="Identity" asp-page="/Account/Manage/Index">
+                                <i class="fa fa-tachometer-alt"></i>
+                                <span>Контролен панел</span>
+
+                            </a>
+                        </li>
+                        <li class="sidebar-dropdown">
+                            <a href="#">
+                                <i class="fa fa-heart"></i>
+                                <span>Любими</span>
+                            </a>
+                            <div class="sidebar-submenu">
+                                <ul>
+                                    @if (await favJobs.CountAsync().ConfigureAwait(false) > 0)
+                                    {
+                                        <li>
+                                            <a href="#">Обяви За Работа:</a><hr>
+                                        </li>
+                                        @await foreach (var item in favJobs)
+                                        {
+                                            <li>
+                                                <a asp-controller="Jobs" asp-action="Details" asp-route-id="@item.Id" class="text-white">@item.Name</a>
+                                            </li>
+                                        }
+                                    }
+                                    @if (await favCompanies.CountAsync().ConfigureAwait(false) > 0)
+                                    {
+                                        <li>
+                                            <a href="#">Компании:</a><hr>
+                                        </li>
+                                        @await foreach (var item in favCompanies)
+                                        {
+                                            <li>
+                                                <a asp-controller="Company" asp-action="Details" asp-route-id="@item.Id" class="text-white">@item.Title</a>
+                                            </li>
+                                        }
+                                    }
+                                    @if (await favContestants.CountAsync().ConfigureAwait(false) > 0)
+                                    {
+                                        <li>
+                                            <a href="#">Кандидати:</a><hr>
+                                        </li>
+                                        @await foreach (var item in favContestants)
+                                        {
+                                            <li>
+                                                <a asp-controller="Contestants" asp-action="Details" asp-route-id="@item.Id" class="text-white">@item.Name</a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a asp-area="Identity" asp-page="/Account/Manage/upgradetopro">
+                                <i class="fa fa-rocket"></i>
+                                <span>Купи Account-PRO</span>
+
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- sidebar-menu  -->
+            </div>
+            <!-- sidebar-content  -->
+            <div class="sidebar-footer">
+                <a asp-controller="Account" asp-action="Manage">
+                    <i class="fa fa-bell"></i>
+                    @if (notifyCount > 0)
+                    {
+                        <span class="badge badge-pill badge-warning notification">@notifyCount</span>
+                    }
+                </a>
+                <a asp-controller="Account" asp-action="Messenger">
+                    <i class="fa fa-envelope"></i>
+                    @if (this._messageService.GetMessagesUnreadBy_Receiver(user.Id).Result > 0)
+                    {
+                        <span class="badge badge-pill badge-success notification">@this._messageService.GetMessagesUnreadBy_Receiver(user.Id)</span>
+                    }
+                </a>
+                <a asp-controller="Account" asp-action="Profile">
+                    <i class="fa fa-cog"></i>
+                    <span class="badge-sonar"></span>
+                </a>
+                <a asp-controller="Account" asp-action="Logout">
+                    <i class="fa fa-power-off"></i>
+                </a>
+            </div>
+        </nav>
+    }
+</div>
+<!-- sidebar-wrapper  -->
+@section Scripts {
+
+    <script asp-src-include="~/Home/jobs/listing/*.js"></script>
+}

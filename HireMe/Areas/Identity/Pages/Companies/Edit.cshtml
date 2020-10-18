@@ -1,0 +1,209 @@
+﻿@page "{id:int}"
+
+@inject ICompanyService _companyService
+
+@model EditModel
+
+@{
+    ViewData["Title"] = "Редактиране";
+    Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+    var locations = ViewBag.Locations as IEnumerable<SelectListItem>;
+}
+
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="~/Messenger/css/autoComplate.css">
+
+<div class="wrapper">
+    <partial name="../Dashboard/_ManageSideBar" />
+
+    <div class="main-panel">
+        <partial name="../Dashboard/_ManageNav2" />
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <form id="company-form" method="post" enctype="multipart/form-data">
+
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="header">
+                                   
+                                    <h4 class="title">Редактиране</h4>
+                                </div>
+                                <div class="content">
+
+                                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label asp-for="Input.Title"></label>
+                                                <input asp-for="Input.Title" class="form-control" />
+                                                <span asp-validation-for="Input.Title" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label asp-for="Input.Email"></label>
+                                                <input asp-for="Input.Email" class="form-control" />
+                                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label asp-for="Input.LocationId"></label>
+                                                <select asp-for="Input.LocationId" asp-items="locations" class="form-control required" placeholder="Location "></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label asp-for="Input.Adress"></label>
+                                                <input asp-for="Input.Adress" class="form-control" enabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label asp-for="Input.PhoneNumber"></label>
+                                                <input asp-for="Input.PhoneNumber" class="form-control" enabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label asp-for="Input.Website"></label>
+                                                <input asp-for="Input.Website" class="form-control" enabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label asp-for="Input.About"></label>
+                                                <input asp-for="Input.About" class="form-control input-lg" enabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label><b>Частно</b></label>
+                                                <input asp-for="Input.Private" class="form-control" enabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label><b>ЕИК номер</b></label>
+                                                <input asp-for="Input.isAuthentic_EIK" class="form-control" disabled />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <hr>
+                                    <button type="submit" class="btn btn-success btn-fill pull-right">Актулизирай</button>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card card-user">
+
+                                <div class="content">
+                                    <label><strong>Снимка:</strong></label>
+                                    <hr>
+                                    <img src="@Model.Input.PictureFullPath" class="img img-responsive img-thumbnail" />
+                                    <hr>
+                                    <input asp-for="Input.FormFile" type="file" />
+                                </div>
+
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card card-user">
+
+                                <div class="content">
+                                    <div class="form-group">
+                                        <label asp-for="Input.Admin1_Id"></label>
+                                        <input asp-for="Input.Admin1_Id" onclick="complate('#AutoComplete')" class="form-control" id="AutoComplete" name="AutoComplete" autocomplete="off" />
+                                        <input asp-for="Input.Admin1_Id" type="hidden" onclick="complate('#AutoComplete')" id="AutoCompleteHidden" autocomplete="off" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="Input.Admin2_Id"></label>
+                                        <input asp-for="Input.Admin2_Id" onclick="complate('#AutoComplete2')" class="form-control" id="AutoComplete2" name="AutoComplete2" autocomplete="off" />
+                                        <input asp-for="Input.Admin2_Id" type="hidden" onclick="complate('#AutoComplete2')" id="AutoComplete2Hidden" autocomplete="off" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="Input.Admin3_Id"></label>
+                                        <input asp-for="Input.Admin3_Id" onclick="complate('#AutoComplete3')" class="form-control" id="AutoComplete3" name="AutoComplete3" autocomplete="off" />
+                                        <input asp-for="Input.Admin3_Id" type="hidden" onclick="complate('#AutoComplete3')" id="AutoComplete3Hidden" autocomplete="off" />
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <partial name="../Dashboard/_ManageFooter" />
+
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+<script type="text/javascript">
+    function complate(id) {
+
+        $(id).autocomplete({
+
+            source: function (request, response) {
+
+                $.ajax({
+                    url: '/Company/Search',
+                    type: 'GET',
+                    cache: false,
+                    data: request,
+                    dataType: 'json',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.firstname + ' ' + item.lastname + ' ',
+                                value: item.id,
+                                image: item.picture,
+                                siteurl: item.siteurl
+                            }
+                        }))
+                    }
+                });
+            },
+            minLength: 2,
+
+            focus: function (event, ui) {
+                $(id).val(ui.item.label);
+
+                return false;
+            },
+
+            select: function (event, ui) {
+                $(id).val(ui.item.label);
+                $(id + 'Hidden').val(ui.item.value);
+                return false;
+            }
+        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+
+
+            var $div = $("<div></div>");
+            var image = item.siteurl + item.image;
+            $("<img style='height:76px;'>").attr("src", image).appendTo($div);
+            $("<span></span>").text(item.label).appendTo($div);
+
+            return $("<li></li>").append($div).appendTo(ul);
+        };
+    };
+
+</script>
+
+}

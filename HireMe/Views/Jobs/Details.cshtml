@@ -1,0 +1,373 @@
+﻿@inject ICompanyService CompanyService
+@inject IJobsService JobsService
+@inject ISkillsService SkillsService
+@inject ILanguageService LanguageService
+@inject ILocationService LocationService
+@inject IConfiguration Config
+@inject IHtmlSanitizer Sanitizer
+
+@model JobsViewModel
+
+@{
+    ViewData["Title"] = Model.Name;
+    ViewData["Description"] = Model.About;
+    ViewData["Keywords"] = Model.Name;
+
+    Layout = "Layout/_Details";
+
+    string SiteImageUrl = Config.GetSection("MySettings").GetSection("SiteImageUrl").Value;
+    var context = Context.Request;
+    var loc = new Uri($"{context.Scheme}://{context.Host}{context.Path}{context.QueryString}");
+    var returnUrl = loc.AbsoluteUri;
+
+    var company = await CompanyService.GetByIdAsync<CompanyViewModel>(Model.CompanyId);
+    var location = await LocationService.GetByIdAsync<LocationViewModel>(Model.LocationId);
+
+    var resumeFiles = ViewData["resumeFiles"] as IEnumerable<SelectListItem>;
+
+    var lastJobs = JobsService.GetLast(5);
+
+    var skills = SkillsService.GetAllByJob(Model.Id);
+    var langs = LanguageService.GetAllByJob(Model.Id);
+}
+
+
+<div class="job-preview">
+    <div class="job-header">
+
+            <div class="job-header-top">
+
+                <div class="d-none d-sm-flex justify-content-end pr-0 col desktop-only-flex">
+                    <b style="font-size:20px; font-weight:700;">@Model.Views</b>&nbsp;<span class="fa fa-eye" style="font-size:20px; " aria-hidden="true"></span>
+                </div>
+                <div class="pt-5 pb-4 container">
+                    <div class="w-100 row">
+                        <div class="col-lg-7 col-12">
+                            <div class="job-title">
+                                <h1>@Model.Name</h1>
+
+                                <div>
+                                    <a asp-controller="Company" asp-action="Details" asp-route-id="@Model.CompanyId">
+                                        <h6>@company.Title</h6>
+                                    </a>
+                                    <span class="text-delimeter"></span>
+                                </div>
+
+                                <div>
+                                    <span class="text-purple icon-location_city"></span>
+                                    <strong>@Model.Adress, @location.City</strong>
+                                    <span class="text-delimeter"></span>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="job-header-bottom py-4">
+                <div class="py-1 container">
+                    <div class="w-100 row">
+                        <div class="col">
+                            <div class="image-wrapper">
+                                <img src="@SiteImageUrl@company.Logo" alt="@Model.Name" />
+                            </div>
+                        </div>
+                        <div class="right w-50 d-flex justify-content-end align-items-center pr-0 col">
+                            <div class="job-buttons">
+                                <button class="button-apply" data-toggle="modal" data-target="#apply">
+                                    <b>Кандидатствай</b>
+                                </button>
+                                <button class="button-danger" data-toggle="modal" data-target="#reportModal">
+                                    <b>Докладвай</b>
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-5 container">
+            <div class="justify-center row">
+
+                <div class="col-lg-6">
+                    <h3>Описание</h3>
+                    <div class="section-list">
+                        <div class="job-details-box">
+                            <div>
+                                <h3 class="subtitle">Тип заетост</h3>
+                                @if (Model.WorkType != null)
+                                {
+                                    <p>@Model.WorkType.Replace(",", "; ")</p>
+                                }
+                                else
+                                {
+                                    <p>Не е посочено</p>
+                                }
+                            </div>
+                            <div>
+                                <h3 class="subtitle">Ниво</h3>
+                                <p>@Model.ExprienceLevels.GetDisplayName()</p>
+                            </div>
+                            <div>
+                                <h3 class="subtitle">Дата</h3>
+                                <p>@Model.Date.ToString("dd/MM/yyyy")</p>
+                            </div>
+                            <div>
+                                <h3 class="subtitle">Заплата (лв.)</h3>
+                                <p>@Model.MinSalary - @Model.MaxSalary<span> / @Model.SalaryType.GetDisplayName()</span></p>
+                            </div>
+                        </div>
+                        <div class="html-section">
+                            <p>@Html.Raw(@Sanitizer.Sanitize(@Model.Description))</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+<form asp-controller="Jobs" asp-action="ApplyWithResume" asp-route-jobId="@Model.Id" asp-route-returnUrl="@returnUrl" method="post">
+    <div id="apply" class="modal fade" role="dialog" data-backdrop="false">
+        <div class="modal-dialog modal-md">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" arial-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    @if (resumeFiles?.Count() > 0)
+                    {
+                        <h5 class="text-center">Кандидатствай с файл</h5>
+                        <br>
+                        <drop-down-list asp-for="@Model.resumeFilesId" asp-items="resumeFiles" />
+                    }
+                    else
+                    {
+                        <h5 class="text-center">Все още няма качено CV.</h5>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <div class="wrap">
+                        @if (resumeFiles?.Count() > 0)
+                        {
+                            <button type="submit" asp-for="@Model.resumeFilesId" class="button" id="SubmitApply">Кандидатствай сега</button>
+                        }
+                        else
+                        {
+                            <a asp-area="Identity" asp-page="/Resume/All" class="btn btn-warning btn-fill col-lg-pull-3" id="MessageSubmit">Go To Upload</a>
+                        }
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+<form asp-controller="Message" asp-action="Report" asp-route-postname="@Model.Name" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div id="reportModal" class="modal fade" role="dialog" data-backdrop="false">
+        <div class="modal-dialog modal-md">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" arial-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Обява:</label><br>
+                                <strong>@Model.Name</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Причина*</label>
+                                <textarea asp-for="Message.Description" class="form-control text required" rows="10" cols="50" style="height:auto;max-width:95%;" required="required" aria-required="true" placeholder="Причината, по която докладвате тази обява. Опитайте се да дадете колкото се може повече подробности."> </textarea>
+                                <span asp-validation-for="Message.Description" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger btn-fill pull-right" id="MessageSubmit">Докладвай</button>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+@*
+    <div class="job-preview">
+
+        <div class="job-header-top">
+            <div class="job-header">
+                <div class="d-none d-sm-flex justify-content-end pr-0 col desktop-only-flex">
+                    <b style="font-size:20px; font-weight:700;">@Model.Views</b>&nbsp;<span class="fa fa-eye" style="font-size:20px; " aria-hidden="true"></span>
+                </div>
+
+                    <div class="job-buttons">
+                        <button class="button-apply" data-toggle="modal" data-target="#apply">
+                            <b>Кандидатствай</b>
+                        </button>
+                        <button class="button-danger" data-toggle="modal" data-target="#reportModal">
+                            <b>Докладвай</b>
+                        </button>
+
+                    <br>
+                    <div class="right d-flex justify-content-end align-items-end pr-5 p-3">
+                        <strong>@Model.Date.ToString("dd/MM/yyyy")</strong>
+                    </div>
+
+                    </div>
+
+                <div class="pt-5 pb-4 container">
+                    <div class="w-100 row">
+                        <div class="col-lg-7 col-12">
+                            <div class="job-title">
+                                <h1>@Model.Name</h1>
+
+                                <div>
+                                    <a asp-controller="Company" asp-action="Details" asp-route-id="@Model.CompanyId">
+                                        <h6>@company.Title</h6>
+                                    </a>
+                                    <span class="text-delimeter"></span>
+                                </div>
+
+                                <div>
+                                    <span class="text-purple icon-location_city"></span>
+                                    <strong>@Model.Adress, @location.City</strong>
+                                    <span class="text-delimeter"></span>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="job-header-bottom py-4">
+            <div class="py-1 container">
+                <div class="w-100 row">
+                    <div class="col">
+                        <div class="image-wrapper">
+                            <img src="@SiteImageUrl@company.Logo" alt="@Model.Name" />
+                        </div>
+                    </div>
+
+
+                    <div class="d-none d-lg-flex justify-content-end pr-0 col desktop-only-flex">
+                        <div class="job-buttons">
+                            <b>Споделете тази обява:</b>
+                            <br>
+                            <button type="button" class="invisible btn-main btn btn-primary"></button>
+                            <button type="button" class="sticky-btn btn btn-primary">
+                                <span class="icon fa icon-fast-forward"></span><span>Сподели</span>
+                            </button>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+            <div class="mt-5 container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h3>Описание</h3>
+                        <div class="section-list">
+                            <div class="job-details-box">
+                                <div>
+                                    <h3 class="subtitle">Тип заетост</h3>
+                                    <p>@Model.WorkType</p>
+                                </div>
+                                <div>
+                                    <h3 class="subtitle">Ниво</h3>
+                                    <p>@Model.ExprienceLevels</p>
+                                </div>
+                                <div>
+                                    <h3 class="subtitle">Дата</h3>
+                                    <p>@Model.Date.ToString("dd/MM/yyyy")</p>
+                                </div>
+                                <div>
+                                    <h3 class="subtitle">Заплата (лв.)</h3>
+                                    <p>@Model.MinSalary - @Model.MaxSalary<span> / @Model.SalaryType.GetDisplayName()</span></p>
+                                </div>
+                            </div>
+                            <div class="html-section">
+                                <h5>@Html.Raw(@Sanitizer.Sanitize(@Model.Description))</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 desktop-only"></div>
+                    <div class="col-lg-2 desktop-only">
+
+                        <div class="row justify-content-center pb-3">
+                            <div class="col-md-12 heading-section ftco-animate">
+                                <h3 class="mb-4">Подобни обяви</h3>
+                            </div>
+                        </div>
+
+                        @{
+
+                            await foreach (var item in lastJobs)
+                            {
+                                var companyId = await CompanyService.GetByIdAsync<CompanyViewModel>(item.CompanyId);
+                                <div class="sidebar-box ftco-animate">
+                                    <div class="">
+                                        <a asp-controller="Jobs" asp-action="Details" asp-route-id="@item.Id">
+                                            <div class="cards">
+                                                <div class="image-wrapper">
+                                                    <img src="@SiteImageUrl@companyId.Logo">
+                                                    </div>
+                                                </div>
+                                        </a>
+                                        <div class="text p-3">
+                                            <h3><a asp-controller="Company" asp-action="Details" asp-route-id="@item.Id">@item.Name</a></h3>
+                                            <p><span class="number">@await JobsService.GetAllCountByCompany(companyId.Id)</span> <a asp-controller="Company" asp-action="Details" asp-route-id="@item.Id"><span>Open positions</span></a></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr>
+                            }
+                        }
+                        <div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+*@
+
+

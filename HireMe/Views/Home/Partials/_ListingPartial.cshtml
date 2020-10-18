@@ -1,0 +1,65 @@
+@inject IConfiguration Config
+
+@inject ILocationService LocationService
+@inject ICategoriesService CategoriesService
+@inject IContestantsService ContestantsService
+
+@inject ICompanyService CompanyService
+@inject IJobsService JobsService
+
+
+@model BannerPartialViewModel
+
+@{
+    var categoriesJobs = ViewData["CategoriesJobs"] as IEnumerable<SelectListItem>;
+    var categoriesCont = ViewData["CategoriesCont"] as IEnumerable<SelectListItem>;
+    var locations = await LocationService.GetAllCount();
+    var jobs = await JobsService.GetAllCount();
+    var contestants = await ContestantsService.GetAllCount();
+
+    int categoriesToShow = 5;
+    var categories = CategoriesService.GetTop(categoriesToShow);
+
+    var topCompanies = CompanyService.GetTop(10);
+    string SiteImageUrl = Config.GetSection("MySettings").GetSection("CompanyImageUrl").Value;
+}
+
+<div class="pull-content light-background round-bottom-edges">
+    <div class="mb-3 mt-lg-5 container">
+        <div class="narrow-container">
+            <div class="row">
+                <div class="col-lg-7 col-md-12">
+                    <div class="listing listing-regular">
+                        <h2>Индустрия</h2>
+                        <ul>
+                            @await foreach (var item in categories)
+                            {
+                                <li><a class=" " target="_self" asp-controller="Home" asp-action="SearchJobsCategory" asp-route-categoryId="@item.Id"><span class="listing-text">@item.Title_BG</span><div class="listing-count"><span>@await ContestantsService.GetAllCountByCategory(item.Id)</span><span class="text-tiny">Кандидати</span></div><div class="listing-count"><span>@await JobsService.GetAllCountByCategory(item.Id)</span><span class="text-tiny">Обяви</span></div><span class="icon fa fa-arrow-circle-right text-success" style="font-size: 1.3rem;"></span></a></li>
+                            }
+
+                        </ul><a class="btn btn-main btn-subcolor m-0 " target="_self" asp-controller="Categories" asp-action="Index">Виж всички</a>
+                    </div>
+                </div>
+                <div class="col-lg-5 col-md-12">
+                    <div class="listing listing-squares pt-5 pt-lg-0">
+                        <h2>Работодатели</h2>
+                        <div class="row">
+                            @await foreach (var item in topCompanies)
+                            {
+                                <div class="col-6 col-lg-6 col-md-4">
+                                    <a class=" " target="_self" asp-controller="Company" asp-action="Details" asp-route-id="@item.Id">
+                                        <div class="cards">
+                                            <div class="image-wrapper">
+                                                <img src="@SiteImageUrl@item.Logo" alt="@item.Title">
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+                        </div><a class="btn btn-main btn-subcolor m-0 " target="_self" asp-controller="Jobs" asp-action="Index">Виж всички</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

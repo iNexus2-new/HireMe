@@ -1,0 +1,65 @@
+﻿@page "{id:slugify}"
+@model DeleteModel
+
+@{
+    ViewData["Title"] = "Премахване";
+    Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+
+}
+
+<div class="wrapper">
+    <partial name="../Dashboard/_ManageSideBar" />
+
+    <div class="main-panel">
+        <partial name="../Dashboard/_ManageNav2" />
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-8">
+
+                        <div class="alert alert-danger" role="alert">
+                            <p>
+                                <strong>Изтриването на тези данни ще премахне за постоянно вашата обява от системата ни и това не може да бъде възстановено.</strong>
+                            </p>
+                        </div>
+                        <div class="card">
+                            <div class="header">
+                                <h4 class="title">Сигурни ли сте, че искате да продължите ?</h4>
+                            </div>
+                            <div class="content">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form id="delete-post" method="post" class="form-group">
+                                            <div asp-validation-summary="All" class="text-danger"></div>
+                                            @if (Model.RequirePassword)
+                                            {
+                                                <div class="form-group">
+                                                    <label asp-for="Input.Password"></label>
+                                                    <input asp-for="Input.Password" class="form-control" />
+                                                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                                                </div>
+                                            }
+                                            <button class="btn btn-danger" type="submit">Премахни от системата</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <partial name="../Dashboard/_ManageFooter" />
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

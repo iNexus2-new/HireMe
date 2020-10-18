@@ -1,0 +1,108 @@
+﻿@page
+@model UserListModel
+
+@inject UserManager<User> UserManager
+@{
+    ViewData["Title"] = "User List";
+    Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+
+    var index = 1;
+    var userList = ViewData["Users"];
+}
+
+<div class="wrapper">
+    <partial name="Partials/_ManageSideBar" />
+
+    <div class="main-panel">
+        <partial name="Partials/_ManageNav2" />
+
+        <div class="content">
+
+            <div class="container-fluid">
+
+                <div class="row">
+                    <table class="table w-75 mx-auto table-hover">
+                        <thead>
+                            <tr class="row">
+                                <th class="col-md-1">#</th>
+                                <th class="col-md-5">Name</th>
+                                <th class="col-md-4">Role</th>
+                                <th class="col-md-6 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+                            @{
+                                if (userList != null)
+                                {
+                                    if (ViewData.Values != null && ViewData.Values.Count() > 0)
+                                    {
+                                        foreach (var user in userList as IEnumerable<UserViewModel>)
+                                        {
+                                            <tr class="row">
+                                                <th class="col-md-1">@index</th>
+                                                <td class="col-md-5">@user.Username</td>
+                                                @{
+                                                    if (await this.UserManager.IsInRoleAsync(this.UserManager.Users.FirstOrDefault(u => u.UserName == user.Username), "Admin"))
+                                                    {
+                                                        <td class="col-md-4">Admin</td>
+                                                    }
+                                                    else if (await this.UserManager.IsInRoleAsync(this.UserManager.Users.FirstOrDefault(u => u.UserName == user.Username), "Employer"))
+                                                    {
+                                                        <td class="col-md-4">Employer</td>
+                                                    }
+                                                    else if (await this.UserManager.IsInRoleAsync(this.UserManager.Users.FirstOrDefault(u => u.UserName == user.Username), "User"))
+                                                    {
+                                                        <td class="col-md-4">User</td>
+                                                    }
+                                                    else if (await this.UserManager.IsInRoleAsync(this.UserManager.Users.FirstOrDefault(u => u.UserName == user.Username), "Contestant"))
+                                                    {
+                                                        <td class="col-md-4">Contestant</td>
+                                                    }
+                                                }
+                                                <td class="col-md-6">
+                                                    <div class="form-inline text-center justify-content-around">
+                                                        @if (await this.UserManager.IsInRoleAsync(this.UserManager.Users.FirstOrDefault(u => u.UserName == user.Username), "Admin"))
+                                                        {
+                                                            <form asp-action="DemoteUser" method="post" class="form-horizontal text-center">
+                                                                <input type="hidden" asp-for="@user.Id" value="@user.Id" />
+                                                                <button type="submit" class="btn btn-info text-dark" value="Demote">Demote</button>
+                                                            </form>
+                                                        }
+                                                        else
+                                                        {
+                                                            <form asp-controller="Accounts" asp-action="PromoteUser" method="post" class="form-horizontal text-center">
+                                                                <input type="hidden" asp-for="@user.Id" value="@user.Id" />
+                                                                <button type="submit" class="btn btn-info text-dark" value="Promote">Promote</button>
+                                                            </form>
+                                                        }
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                            index++;
+                                        }
+                                    }
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <partial name="Partials/_ManageFooter" />
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

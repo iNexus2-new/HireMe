@@ -1,0 +1,49 @@
+﻿@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+
+    var poster = UserManager.GetUserId(User);
+}
+
+
+    <ul class="nav">
+        <li class="active">
+            <a asp-page="/Admin/Index">
+                <i class="pe-7s-graph"></i>
+                <p>Home</p>
+            </a>
+        </li>
+
+
+        <li>
+            <a asp-page="/Admin/UserList">
+                <i class="pe-7s-note2"></i>
+                <p>Users List</p>
+            </a>
+        </li>
+
+        <li>
+            <a asp-page="/Admin/CompanyPosts">
+                <i class="pe-7s-note2"></i>
+                <p>Companies</p>
+            </a>
+        </li>
+
+        <li>
+            <a asp-page="/Admin/JobPosts">
+                <i class="pe-7s-note2"></i>
+                <p>Jobs</p>
+            </a>
+        </li>
+
+        <li>
+            <a asp-page="/Admin/ContestantPosts">
+                <i class="pe-7s-note2"></i>
+                <p>Contestants</p>
+            </a>
+        </li>
+
+    </ul>

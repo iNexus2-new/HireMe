@@ -1,0 +1,143 @@
+﻿@page
+@inject UserManager<User> UserManager
+
+@model EditProfileModel
+@{
+    ViewData["Title"] = "Профил";
+    Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<div class="wrapper">
+    <partial name="../Dashboard/_ManageSideBar" />
+
+    <div class="main-panel">
+        <partial name="../Dashboard/_ManageNav2" />
+
+        <div class="content">
+            <div class="container-fluid">
+
+                <div class="row">
+                    <form id="profile-form" method="post" enctype="multipart/form-data">
+                        <div class="col-md-8">
+
+                            @if (!Model.IsEmailConfirmed)
+                            {
+                            <div class="alert alert-warning">
+                                <i class="fa fa-warning"></i> Вашият е-майл адрес не е потвърден. 
+                                <br>Ако пощата ви е празна, моля натиснете бутона <b>"Изпрати потвърждение"</b>.
+                            </div>
+                            }
+
+                            <div class="card">
+
+                                <div class="header">
+                                    <h4 class="title">Лични данни</h4>
+                                </div>
+                                <div class="content">
+
+                                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label asp-for="Username"></label>
+                                                <input asp-for="Username" class="form-control" disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label asp-for="Input.Email"></label>
+                                                @if (Model.IsEmailConfirmed)
+                                                {
+                                                    <div class="input-group">
+                                                        <input asp-for="Input.Email" class="form-control" />
+                                                        <span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-ok text-success"></span></span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <input asp-for="Input.Email" class="form-control" />
+                                                }
+                                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="Input.FirstName"></label>
+                                                <input asp-for="Input.FirstName" class="form-control" enabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="Input.LastName"></label>
+                                                <input asp-for="Input.LastName" class="form-control" enabled />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label asp-for="Input.PhoneNumber"></label>
+                                                <input asp-for="Input.PhoneNumber" class="form-control" />
+                                                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if (!Model.IsEmailConfirmed)
+                                    {
+                                        <button id="email-verification" type="submit" asp-page-handler="OnPostSendVerificationEmailAsync" class="btn btn-outline-primary">Изпрати потвърждение</button>
+                                    }
+                                    <button type="submit" class="btn btn-success btn-fill pull-right">Запази</button>
+                                    <div class="clearfix"></div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card card-user">
+                                <div class="image">
+
+                                </div>
+                                <div class="content">
+                                    <div class="author">
+                                            <img class="avatar border-gray" src="@Model.Input.PictureFullPath" alt="..." />
+
+                                            <h4 class="title">
+                                                @Model.Input.FirstName @Model.Input.LastName<br />
+                                              
+                                            </h4>
+                                            <br>
+                                            <div class="col-md-5">
+
+                                                <div class="form-group">
+                                                    <label asp-for="Input.FormFile"></label>
+                                                    <input asp-for="Input.FormFile" type="file" />
+                                                    <hr>
+                                                </div>
+
+                                            </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <partial name="../Dashboard/_ManageFooter" />
+
+    </div>
+</div>
+

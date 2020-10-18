@@ -1,0 +1,43 @@
+﻿@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+
+    <link rel="stylesheet" href="~/customCSS/Company/Details.css">
+}
+
+
+<div id="root">
+    <div class="app heading-sticky" style="background-color: rgb(255, 255, 255);">
+
+        <!-- Menu Area -->
+        <div class="header header-bg round-bottom-edges fixed-top" style="background: -webkit-gradient(linear, left top, right top, from(#207dff), to(#a16ae8));"></div>
+        <div class="header round-bottom-edges fixed-top" style="background-color: transparent;">
+            <partial name="../Home/customPartials/_MenuPartial" />
+        </div>
+
+        <!-- Content Area -->
+        <div class="page-content scroll-holder container-fluid pull-content">
+            @RenderBody()
+        </div>
+
+        <!-- Footer Area -->
+        <partial name="../Home/customPartials/_FooterPartial" />
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rating/1.5.0/bootstrap-rating.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/jquery.easypiechart.min.js"></script>
+
+    <script>
+        (function () {
+            $('input').rating();
+            $('.chart').easyPieChart({
+                barColor: "#007bff",
+                trackColor: "#e6e6e6",
+                lineCap: "square",
+                lineWidth: 2,
+                size: $(".skills").find(".col-4").find("span").width()
+            });
+        })(jQuery);
+    </script>
+}

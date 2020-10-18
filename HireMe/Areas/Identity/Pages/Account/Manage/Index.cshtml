@@ -1,0 +1,271 @@
+﻿@page
+
+@inject IConfiguration config
+@inject IResumeService resumeService
+@inject UserManager<User> UserManager
+
+@model DashboardModel
+
+@{
+    ViewData["Title"] = "Дашборд";
+    Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+
+    var context = HttpContext.Request;
+    var location = new Uri($"{context.Scheme}://{context.Host}{context.Path}{context.QueryString}");
+    var returnUrl = location.AbsoluteUri;
+
+    string siteUrl = config.GetSection("MySettings").GetSection("ResumeUrl").Value;
+
+    var user = await UserManager.GetUserAsync(User);
+
+    <script src="~/Home/details/pdfViewer/js/pdfobject.min.js"></script>
+
+}
+<style>
+    .pdfobject-container {
+        height: 120rem;
+        border: 1rem solid rgba(0,0,0,.1);
+    }
+</style>
+<link rel="stylesheet" href="~/Chart/Chart.css">
+
+
+<div class="row form-group">
+    <!-- Modal -->
+    <div id="myResume" class="modal fade" role="dialog" data-backdrop="false">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body">
+                    <div id="resume">
+                    </div>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<div class="wrapper">
+    <partial name="../Dashboard/_ManageSideBar" />
+
+    <div class="main-panel">
+        <partial name="../Dashboard/_ManageNav2" />
+
+
+        <div class="content">
+            <div class="container-fluid">
+                
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card">
+
+                            <div class="header">
+                                <h4 class="title">Views</h4>
+                                <p class="category">Last Campaign Performance</p>
+                            </div>
+                            <div class="content">
+                                @await Component.InvokeAsync("chartjs")
+                                <div class="footer">
+                                    <div class="legend">
+                                        <i class="fa fa-circle text-info"></i> Open
+                                        <i class="fa fa-circle text-danger"></i> Bounce
+                                        <i class="fa fa-circle text-warning"></i> Unsubscribe
+                                    </div>
+                                    <hr>
+                                    <div class="stats">
+                                        <i class="fa fa-clock-o"></i> Campaign sent 2 days ago
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    
+                <div class="row">
+                    @if (User.IsInRole("Employer") || User.IsInRole("Recruiter"))
+                    {
+                        var receivedApplications = resumeService.GetAllReceived(user);
+                        //   var count = receivedApplications?.CountAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+
+                        <div class="col-md-7">
+                            <div class="card ">
+                                <div class="header">
+                                    <h4 class="title">Кандидатури</h4>
+                                </div>
+
+
+                                <div class="content">
+                                    <div class="table-full-width">
+                                        <table class="table">
+                                            <tbody>
+
+                                                @if (receivedApplications != null)
+                                                {
+
+                                                    @await foreach (var item in receivedApplications)
+                                                    {
+                                                <tr>
+                                                    <td>
+                                                        @item.Date.ToString("dd/MM/yyyy")
+                                                    </td>
+                                                    <td>@item.Title</td>
+                                                    <td>@item.</td>
+                                                    <td class="td-actions text-right">
+                                                        <script>PDFObject.embed("@siteUrl@item.FileId", "#resume");</script>
+
+                                                        <button type="button" data-toggle="modal" data-target="#myResume" title="View" class="btn btn-success btn-simple btn-xs">
+                                                            <i class="fa fa-print"></i>
+                                                        </button>
+
+                                                        <a asp-controller="Resume" asp-action="DeleteApplication" asp-route-id="@item.Id" asp-route-returnurl="@returnUrl" title="Skip" class="btn btn-danger btn-simple btn-xs">
+                                                            <i class="fa fa-times"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td>Все още няма изпратени кандидатури за вашите обяви!</td>
+                                                    </tr>
+
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="footer">
+                                        <hr>
+                                        <div class="stats">
+                                            <i class="fa fa-info"></i>Получени резюмета за обявите ви.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+
+
+
+                    @*
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="header">
+                                <h4 class="title">Users Behavior</h4>
+                                <p class="category">24 Hours performance</p>
+                            </div>
+                            <div class="content">
+                                <div id="chartHours" class="ct-chart"></div>
+                                <div class="footer">
+                                    <div class="legend">
+                                        <i class="fa fa-circle text-info"></i> Open
+                                        <i class="fa fa-circle text-danger"></i> Click
+                                        <i class="fa fa-circle text-warning"></i> Click Second Time
+                                    </div>
+                                    <hr>
+                                    <div class="stats">
+                                        <i class="fa fa-history"></i> Updated 3 minutes ago
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        *@
+                </div>
+
+
+                @*
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card ">
+                            <div class="header">
+                                <h4 class="title">2014 Sales</h4>
+                                <p class="category">All products including Taxes</p>
+                            </div>
+                            <div class="content">
+                                <div id="chartActivity" class="ct-chart"></div>
+
+                                <div class="footer">
+                                    <div class="legend">
+                                        <i class="fa fa-circle text-info"></i> Tesla Model S
+                                        <i class="fa fa-circle text-danger"></i> BMW 5 Series
+                                    </div>
+                                    <hr>
+                                    <div class="stats">
+                                        <i class="fa fa-check"></i> Data information certified
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>*@
+            </div>
+        </div>
+
+        <partial name="../Dashboard/_ManageFooter" />
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/Chart/Chart.min.js"></script>
+@*
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Януари', 'Февруари', 'Март', 'Април', 'Май', ',Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+    *@
+
+}

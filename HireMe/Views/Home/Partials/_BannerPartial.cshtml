@@ -1,0 +1,159 @@
+@inject ICompanyService CompanyService
+@inject IContestantsService ContestantsService
+@inject IJobsService JobsService
+
+
+@model BannerPartialViewModel
+
+@{
+    var categoriesJobs = ViewData["CategoriesJobs"] as IEnumerable<SelectListItem>;
+    var categoriesCont = ViewData["CategoriesCont"] as IEnumerable<SelectListItem>;
+
+    var companies = await CompanyService.GetAllCount();
+    var jobs = await JobsService.GetAllCount();
+    var contestants = await ContestantsService.GetAllCount();
+}
+
+<div class="top-side-home round-bottom-edges pull-content">
+    <div class="overlay"></div>
+    <div class="container push-content">
+        <div class="narrow-container ftco-animate">
+
+            <div class="text text-white text-center pt-5 mt-md-5">
+                <p class="mb-4 mobile-only" style="padding-bottom:100px;">Намерете възможности за работа, развитие и кариера</p>
+                <h1 class="mb-5 desktop-only">Най-лесният начин да си намерите нова работа</h1>
+
+                <div class="ftco-counter ftco-no-pt ftco-no-pb desktop-only">
+
+                    <div class="row">
+                        <div class="col-md-4 d-flex justify-content-center counter-wrap">
+                            <div class="block-18">
+                                <div class="text d-flex">
+                                    <div class="icon mr-2">
+                                        <span class="flaticon-career"></span>
+                                    </div>
+                                    <div class="desc text-left">
+                                        <strong class="number" data-number="@companies">0</strong>
+                                        <span>Работодатели</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-flex justify-content-center counter-wrap">
+                            <div class="block-18 text-center">
+                                <div class="text d-flex">
+                                    <div class="icon mr-2">
+                                        <span class="flaticon-visitor"></span>
+                                    </div>
+                                    <div class="desc text-left">
+                                        <strong class="number" data-number="@jobs">0</strong>
+                                        <span>Обяви</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-flex justify-content-center counter-wrap">
+                            <div class="block-18 text-center">
+                                <div class="text d-flex">
+                                    <div class="icon mr-2">
+                                        <span class="flaticon-resume"></span>
+                                    </div>
+                                    <div class="desc text-left">
+                                        <strong class="number" data-number="@contestants">0</strong>
+                                        <span>Кандидати</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ftco-search my-md-5">
+                <div class="row">
+
+                    <div class="nav nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <a class="nav-link" id="v-pills-1-tab" data-toggle="pill" href="#v-pills-1" role="tab" aria-controls="v-pills-1" aria-selected="true">Търси работа</a>
+                        <a class="nav-link active mr-md-1" id="v-pills-2-tab" data-toggle="pill" href="#v-pills-2" role="tab" aria-controls="v-pills-2" aria-selected="false">Търси служители</a>
+                    </div>
+
+                    <div class="col-md-12 tab-wrap">
+
+                        <div class="tab-content p-4" id="v-pills-tabContent">
+
+                            <div class="tab-pane fade show active" id="v-pills-1" role="tabpanel" aria-labelledby="v-pills-nextgen-tab">
+
+                                <form asp-controller="Home" asp-action="Jobs" method="post" class="search-job">
+                                    <div class="row no-gutters">
+                                        <div class="col-md-4 mr-md-2">
+                                            <div class="form-group">
+                                                <div class="form-field">
+                                                    <div class="icon"><span class="icon-briefcase"></span></div>
+                                                    <input asp-for="SearchString" type="text" class="form-control" placeholder="Ключова дума: .NET Developer, Шофьор">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mr-md-2">
+                                            <div class="form-group">
+                                                <div class="form-field">
+                                                    <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                                                    <select asp-for="CategoryId" asp-items="categoriesJobs" class="form-control"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <div class="form-field">
+                                                    <button type="submit" class="form-control btn btn-primary">Търси</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+
+
+                            <div class="tab-pane fade" id="v-pills-2" role="tabpanel" aria-labelledby="v-pills-performance-tab">
+                                <form asp-controller="Home" asp-action="Candidates" method="post" class="search-candidates">
+                                    <div class="row no-gutters">
+                                        <div class="col-md-4 mr-md-2">
+                                            <div class="form-group">
+                                                <div class="form-field">
+                                                    <div class="icon"><span class="icon-briefcase"></span></div>
+                                                    <input asp-for="SearchString" type="text" class="form-control" placeholder="Ключова дума: .NET Developer, Шофьор">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mr-md-2">
+                                            <div class="form-group">
+                                                <div class="form-field">
+                                                    <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                                                    <select asp-for="CategoryId" asp-items="categoriesJobs" class="form-control"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <div class="form-field">
+                                                    <button type="submit" class="form-control btn btn-primary">Търси</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+

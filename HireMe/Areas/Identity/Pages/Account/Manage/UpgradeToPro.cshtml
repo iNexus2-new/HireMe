@@ -1,0 +1,166 @@
+﻿@page
+@model DeletePersonalDataModel
+@{
+    ViewData["Title"] = "Купи PRO-акаунт";
+    Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+}
+
+<div class="wrapper">
+    <partial name="../Dashboard/_ManageSideBar" />
+
+    <div class="main-panel">
+        <partial name="../Dashboard/_ManageNav2" />
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="content">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-8 ml-auto mr-auto">
+                                <div class="card">
+                                    <div class="header text-center">
+                                        <h4 class="title">Upgrade To Pro</h4>
+
+                                        <br>
+                                    </div>
+
+                                    @if (User.IsInRole("Contestant"))
+                                    {
+                                        <div class="content table-responsive table-upgrade">
+                                            <table class="table">
+                                                <thead>
+                                                <th></th>
+                                                <th class="text-center">Free</th>
+                                                <th class="text-center">PRO</th>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Candidate Posts</td>
+                                                        <td>1</td>
+                                                        <td>Unlimited</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Profile View Rating</td>
+                                                        <td>Low</td>
+                                                        <td>High</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Approvation Time</td>
+                                                        <td>Slow</td>
+                                                        <td>Fast</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Boosted Posts</td>
+                                                        <td><i class="fa fa-times text-danger"></i></td>
+                                                        <td><i class="fa fa-check text-success"></i></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Sugestion to companies</td>
+                                                        <td><i class="fa fa-times text-danger"></i></td>
+                                                        <td><i class="fa fa-check text-success"></i></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Premium Support</td>
+                                                        <td><i class="fa fa-times text-danger"></i></td>
+                                                        <td><i class="fa fa-check text-success"></i></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td>Free</td>
+                                                        <td>Just $10</td>
+                                                    </tr>
+                                                    <tr class="last-row">
+                                                        <td></td>
+                                                        <td>
+                                                            <a href="#" class="btn btn-round btn-fill btn-default disabled">Current Version</a>
+                                                        </td>
+                                                        <td>
+                                                            <a asp-page="Checkout" class="btn btn-round btn-fill btn-info">Upgrade to PRO</a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+
+                                    @if (User.IsInRole("Employer"))
+                                    {
+                                        <div class="content table-responsive table-upgrade">
+                                            <table class="table">
+                                                <thead>
+                                                <th></th>
+                                                <th class="text-center">Free</th>
+                                                <th class="text-center">PRO</th>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Companies per account</td>
+                                                        <td>1</td>
+                                                        <td>Unlimited</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>View rating</td>
+                                                        <td>Low</td>
+                                                        <td>High</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Job offers per company</td>
+                                                        <td>5</td>
+                                                        <td>Unlimited</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Boosted job offers</td>
+                                                        <td><i class="fa fa-times text-danger"></i></td>
+                                                        <td><i class="fa fa-check text-success"></i></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Suggestion to candidates</td>
+                                                        <td><i class="fa fa-times text-danger"></i></td>
+                                                        <td><i class="fa fa-check text-success"></i></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Connected recruiters</td>
+                                                        <td><i class="fa fa-times text-danger"></i></td>
+                                                        <td><i class="fa fa-check text-success"></i></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Premium Support</td>
+                                                        <td><i class="fa fa-times text-danger"></i></td>
+                                                        <td><i class="fa fa-check text-success"></i></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td>Free</td>
+                                                        <td>Just $10</td>
+                                                    </tr>
+                                                    <tr class="last-row">
+                                                        <td></td>
+                                                        <td>
+                                                            <a href="#" class="btn btn-round btn-fill btn-default disabled">Current Version</a>
+                                                        </td>
+                                                        <td>
+                                                            <a asp-page="Checkout" class="btn btn-round btn-fill btn-info">Upgrade to PRO</a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <partial name="../Dashboard/_ManageFooter" />
+
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
